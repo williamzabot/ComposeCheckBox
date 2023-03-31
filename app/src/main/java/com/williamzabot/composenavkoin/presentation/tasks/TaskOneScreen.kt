@@ -58,10 +58,10 @@ fun TaskScreen(
         when (val data = uiState.value) {
             is UiState.ScreenForm -> {
                 TaskForm(weekDays.value,
-                    { day, checked ->
+                    changedItemCheckBox = { day, checked ->
                         viewModel.changeItem(day, checked)
                     },
-                    { task ->
+                    onSaveClick = { task ->
                         viewModel.addTask(task)
                         viewModel.showTaskDetail(task)
                     })
@@ -148,16 +148,9 @@ private fun TaskDetail(task: Task, onBackClick: () -> Unit) {
         val listDays = mutableListOf("Dias: ")
         listDays.addAll(task.days)
         Row {
-            listDays.forEach {
-                if (it.isNotBlank()) {
-                    val space = if (it == listDays.last()
-                        || it == listDays.first()
-                    ) {
-                        ""
-                    } else {
-                        ", "
-                    }
-                    Text(text = "$it$space")
+            listDays.forEach { day ->
+                if (day.isNotBlank()) {
+                    FormatWeekDaysAndShowOnText(day, listDays)
                 }
             }
         }
@@ -168,6 +161,21 @@ private fun TaskDetail(task: Task, onBackClick: () -> Unit) {
             Text(text = "Voltar", color = Color.Black)
         }
     }
+}
+
+@Composable
+private fun FormatWeekDaysAndShowOnText(
+    day: String,
+    listDays: MutableList<String>
+) {
+    val space = if (day == listDays.last()
+        || day == listDays.first()
+    ) {
+        ""
+    } else {
+        ", "
+    }
+    Text(text = "$day$space")
 }
 
 
