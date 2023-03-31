@@ -45,8 +45,6 @@ class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
         }
     }
 
-    fun getTasks() = taskRepository.getTasks()
-
     fun changeItem(changeDay: WeekDay, changeChecked: Boolean) {
         viewModelScope.launch {
             _weekDays.emit(_weekDays.value.map {

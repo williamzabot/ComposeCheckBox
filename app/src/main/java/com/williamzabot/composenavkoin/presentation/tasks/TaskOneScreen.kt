@@ -31,7 +31,10 @@ import com.williamzabot.composenavkoin.data.model.Task
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun TaskScreen(viewModel: TaskViewModel = koinViewModel()) {
+fun TaskScreen(
+    viewModel: TaskViewModel = koinViewModel(),
+    onNavigateClick: (task: Task) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,12 +72,21 @@ fun TaskScreen(viewModel: TaskViewModel = koinViewModel()) {
                 }
             }
         }
+        Button(
+            modifier = Modifier.align(CenterHorizontally).padding(all = 10.dp),
+            onClick = {
+            onNavigateClick(
+                Task("task enviada", listOf("Sábado"))
+            )
+        }) {
+            Text(text = "Navegar")
+        }
     }
 
 }
 
 @Composable
-fun TaskForm(
+private fun TaskForm(
     weekDays: List<WeekDay>,
     changedItemCheckBox: (changedDay: WeekDay, isChecked: Boolean) -> Unit,
     onSaveClick: (task: Task) -> Unit
@@ -126,7 +138,7 @@ fun TaskForm(
 }
 
 @Composable
-fun TaskDetail(task: Task, onBackClick: () -> Unit) {
+private fun TaskDetail(task: Task, onBackClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -160,7 +172,10 @@ fun TaskDetail(task: Task, onBackClick: () -> Unit) {
 
 
 @Composable
-fun ItemLayout(weekDay: WeekDay, onChanged: (weekDay: WeekDay, isChecked: Boolean) -> Unit) {
+private fun ItemLayout(
+    weekDay: WeekDay,
+    onChanged: (weekDay: WeekDay, isChecked: Boolean) -> Unit
+) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
         Checkbox(
             checked = weekDay.checked,

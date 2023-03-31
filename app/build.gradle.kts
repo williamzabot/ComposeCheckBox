@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -55,11 +56,12 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.compose.ui:ui:${Versions.COMPOSE_VERSION}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE_VERSION}")
-    implementation("androidx.navigation:navigation-compose:${Versions.NAV_VERSION}")
+    implementation("androidx.navigation:navigation-compose:${Versions.NAVIGATION_COMPOSE_VERSION}")
     implementation("androidx.compose.material:material:1.4.0")
     implementation("io.insert-koin:koin-androidx-compose:${Versions.KOIN_COMPOSE_VERSION}")
     implementation("io.insert-koin:koin-core:${Versions.KOIN_VERSION}")
     implementation("io.insert-koin:koin-android:${Versions.KOIN_VERSION}")
+    implementation("com.google.code.gson:gson:${Versions.GSON}")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
