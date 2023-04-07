@@ -1,5 +1,6 @@
 package com.williamzabot.composenavkoin.presentation.tasks
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
@@ -18,6 +19,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,12 +28,15 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.williamzabot.composenavkoin.data.model.Task
+import com.williamzabot.composenavkoin.presentation.utils.PrintScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TaskScreen(
+    context: Context,
     viewModel: TaskViewModel = koinViewModel(),
     onNavigateClick: (task: Task) -> Unit
 ) {
@@ -57,32 +62,60 @@ fun TaskScreen(
         val uiState = viewModel.uiState.collectAsState()
         when (val data = uiState.value) {
             is UiState.ScreenForm -> {
-                TaskForm(weekDays.value,
-                    changedItemCheckBox = { day, checked ->
-                        viewModel.changeItem(day, checked)
-                    },
-                    onSaveClick = { task ->
-                        viewModel.addTask(task)
-                        viewModel.showTaskDetail(task)
-                    })
+                showForm(weekDays, viewModel)
             }
             is UiState.ScreenDetail -> {
                 TaskDetail(task = data.task) {
                     viewModel.showTaskForm()
                 }
             }
+            is UiState.PrintScreen -> {
+                showForm(weekDays, viewModel)
+                PrintScreen(
+                    view = LocalView.current,
+                    context = context
+                )
+                viewModel.showTaskForm()
+            }
         }
         Button(
-            modifier = Modifier.align(CenterHorizontally).padding(all = 10.dp),
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(all = 10.dp),
             onClick = {
-            onNavigateClick(
-                Task("task enviada", listOf("Sábado"))
-            )
-        }) {
+                onNavigateClick(
+                    Task("task enviada", listOf("Sábado"))
+                )
+            }) {
             Text(text = "Navegar")
+        }
+        Button(
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(all = 10.dp),
+            onClick = {
+                viewModel.printScreen()
+            }) {
+            Text(text = "Print")
         }
     }
 
+}
+
+@Composable
+private fun showForm(
+    weekDays: State<List<WeekDay>>,
+    viewModel: TaskViewModel
+) {
+    TaskForm(
+        weekDays.value,
+        changedItemCheckBox = { day, checked ->
+            viewModel.changeItem(day, checked)
+        },
+        onSaveClick = { task ->
+            viewModel.addTask(task)
+            viewModel.showTaskDetail(task)
+        })
 }
 
 @Composable
@@ -118,9 +151,11 @@ private fun TaskForm(
                 }
             }
         }
-        val context = LocalContext.current.applicationContext
+        val context = LocalContext.current
         Button(
-            modifier = Modifier.align(CenterHorizontally),
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .background(color = Color.Black),
             onClick = {
                 if (inputValue.value.isNotBlank() && weekDays.isNotEmpty()) {
                     val task =
@@ -132,7 +167,7 @@ private fun TaskForm(
                     Toast.makeText(context, "Campos vazios", Toast.LENGTH_SHORT).show()
                 }
             }) {
-            Text(text = "Salvar", modifier = Modifier.padding(10.dp))
+            Text(text = "Salvar", modifier = Modifier.padding(10.dp), color = Color.White)
         }
     }
 }

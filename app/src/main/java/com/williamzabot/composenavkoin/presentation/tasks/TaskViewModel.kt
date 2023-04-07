@@ -45,6 +45,12 @@ class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
         }
     }
 
+    fun printScreen() {
+        viewModelScope.launch {
+            _uiState.emit(UiState.PrintScreen)
+        }
+    }
+
     fun changeItem(changeDay: WeekDay, changeChecked: Boolean) {
         viewModelScope.launch {
             _weekDays.emit(_weekDays.value.map {
@@ -61,4 +67,5 @@ class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
 sealed class UiState {
     object ScreenForm: UiState()
     data class ScreenDetail(val task: Task): UiState()
+    object PrintScreen: UiState()
 }

@@ -21,10 +21,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    NavigationGraph(navController = navController)
+                    NavigationGraph(navController = navController, context = this)
                 }
             }
         }
     }
 }
-
