@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.williamzabot.composenavkoin.data.model.Task
 import com.williamzabot.composenavkoin.presentation.utils.PrintScreen
+import com.williamzabot.composenavkoin.presentation.utils.formatListWithCommaAndSpace
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -62,7 +63,7 @@ fun TaskScreen(
         val uiState = viewModel.uiState.collectAsState()
         when (val data = uiState.value) {
             is UiState.ScreenForm -> {
-                showForm(weekDays, viewModel)
+                ShowForm(weekDays, viewModel)
             }
             is UiState.ScreenDetail -> {
                 TaskDetail(task = data.task) {
@@ -70,7 +71,7 @@ fun TaskScreen(
                 }
             }
             is UiState.PrintScreen -> {
-                showForm(weekDays, viewModel)
+                ShowForm(weekDays, viewModel)
                 PrintScreen(
                     view = LocalView.current,
                     context = context
@@ -103,7 +104,7 @@ fun TaskScreen(
 }
 
 @Composable
-private fun showForm(
+private fun ShowForm(
     weekDays: State<List<WeekDay>>,
     viewModel: TaskViewModel
 ) {
@@ -183,11 +184,14 @@ private fun TaskDetail(task: Task, onBackClick: () -> Unit) {
         val listDays = mutableListOf("Dias: ")
         listDays.addAll(task.days)
         Row {
+            var allDays = ""
             listDays.forEach { day ->
-                if (day.isNotBlank()) {
-                    FormatWeekDaysAndShowOnText(day, listDays)
-                }
+                allDays += day.formatListWithCommaAndSpace(
+                    first = listDays.first(),
+                    last = listDays.last()
+                )
             }
+            Text(text = allDays)
         }
         Button(
             onClick = { onBackClick() },
@@ -197,22 +201,6 @@ private fun TaskDetail(task: Task, onBackClick: () -> Unit) {
         }
     }
 }
-
-@Composable
-private fun FormatWeekDaysAndShowOnText(
-    day: String,
-    listDays: MutableList<String>
-) {
-    val space = if (day == listDays.last()
-        || day == listDays.first()
-    ) {
-        ""
-    } else {
-        ", "
-    }
-    Text(text = "$day$space")
-}
-
 
 @Composable
 private fun ItemLayout(
