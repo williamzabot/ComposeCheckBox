@@ -17,6 +17,20 @@ class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
         WeekDay("quinta"),
         WeekDay("sexta"),
         WeekDay("sábado"),
+        WeekDay("domingo"),
+        WeekDay("Segunda"),
+        WeekDay("terça"),
+        WeekDay("quarta"),
+        WeekDay("quinta"),
+        WeekDay("sexta"),
+        WeekDay("sábado"),
+        WeekDay("domingo"),
+        WeekDay("Segunda"),
+        WeekDay("terça"),
+        WeekDay("quarta"),
+        WeekDay("quinta"),
+        WeekDay("sexta"),
+        WeekDay("sábado"),
         WeekDay("domingo")
     )
 
@@ -65,7 +79,7 @@ class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
 }
 
 sealed class UiState {
-    object ScreenForm: UiState()
-    data class ScreenDetail(val task: Task): UiState()
-    object PrintScreen: UiState()
+    object ScreenForm : UiState()
+    data class ScreenDetail(val task: Task) : UiState()
+    object PrintScreen : UiState()
 }

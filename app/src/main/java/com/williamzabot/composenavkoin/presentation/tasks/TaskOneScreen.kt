@@ -41,66 +41,71 @@ fun TaskScreen(
     viewModel: TaskViewModel = koinViewModel(),
     onNavigateClick: (task: Task) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(ScrollState(0))
-    ) {
-        Surface(
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(Color.LightGray)
-                .border(BorderStroke(1.dp, Color.Black))
+                .fillMaxSize()
+                .verticalScroll(ScrollState(0))
+                .weight(1f)
         ) {
-            Text(
-                text = "Header",
+            Surface(
                 modifier = Modifier
-                    .padding(top = 14.dp, start = 150.dp)
-            )
-        }
-        val weekDays = viewModel.weekDays.collectAsState()
-        val uiState = viewModel.uiState.collectAsState()
-        when (val data = uiState.value) {
-            is UiState.ScreenForm -> {
-                ShowForm(weekDays, viewModel)
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(Color.LightGray)
+                    .border(BorderStroke(1.dp, Color.Black))
+            ) {
+                Text(
+                    text = "Header",
+                    modifier = Modifier
+                        .padding(top = 14.dp, start = 150.dp)
+                )
             }
-            is UiState.ScreenDetail -> {
-                TaskDetail(task = data.task) {
+            val weekDays = viewModel.weekDays.collectAsState()
+            val uiState = viewModel.uiState.collectAsState()
+            when (val data = uiState.value) {
+                is UiState.ScreenForm -> {
+                    ShowForm(weekDays, viewModel)
+                }
+                is UiState.ScreenDetail -> {
+                    TaskDetail(task = data.task) {
+                        viewModel.showTaskForm()
+                    }
+                }
+                is UiState.PrintScreen -> {
+                    ShowForm(weekDays, viewModel)
+                    PrintScreen(
+                        view = LocalView.current,
+                        context = context
+                    )
                     viewModel.showTaskForm()
                 }
             }
-            is UiState.PrintScreen -> {
-                ShowForm(weekDays, viewModel)
-                PrintScreen(
-                    view = LocalView.current,
-                    context = context
-                )
-                viewModel.showTaskForm()
+        }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            /*Button(
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(all = 10.dp),
+                onClick = {
+                    onNavigateClick(
+                        Task("task enviada", listOf("Sábado"))
+                    )
+                }) {
+                Text(text = "Navegar")
+            }*/
+            Button(
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(all = 10.dp),
+                onClick = {
+                    viewModel.printScreen()
+                }) {
+                Text(text = "Print")
             }
         }
-        Button(
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(all = 10.dp),
-            onClick = {
-                onNavigateClick(
-                    Task("task enviada", listOf("Sábado"))
-                )
-            }) {
-            Text(text = "Navegar")
-        }
-        Button(
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(all = 10.dp),
-            onClick = {
-                viewModel.printScreen()
-            }) {
-            Text(text = "Print")
-        }
     }
-
 }
 
 @Composable
