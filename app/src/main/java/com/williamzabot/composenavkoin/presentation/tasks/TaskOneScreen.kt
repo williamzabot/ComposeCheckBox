@@ -19,6 +19,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,9 +31,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.drawToBitmap
 import com.williamzabot.composenavkoin.data.model.Task
-import com.williamzabot.composenavkoin.presentation.utils.PrintScreen
+import com.williamzabot.composenavkoin.presentation.utils.CaptureScreenshot
+import com.williamzabot.composenavkoin.presentation.utils.combineBitmaps
 import com.williamzabot.composenavkoin.presentation.utils.formatListWithCommaAndSpace
+import com.williamzabot.composenavkoin.presentation.utils.saveBitmap
+import com.williamzabot.composenavkoin.presentation.utils.shareImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -42,11 +50,13 @@ fun TaskScreen(
     onNavigateClick: (task: Task) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-
+        val scrollState = remember {
+            ScrollState(0)
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(ScrollState(0))
+                .verticalScroll(scrollState)
                 .weight(1f)
         ) {
             Surface(
@@ -75,11 +85,26 @@ fun TaskScreen(
                 }
                 is UiState.PrintScreen -> {
                     ShowForm(weekDays, viewModel)
-                    PrintScreen(
-                        view = LocalView.current,
-                        context = context
-                    )
-                    viewModel.showTaskForm()
+                    val view = LocalView.current
+                    val visibleBitmap = view.drawToBitmap()
+                    LaunchedEffect(key1 = Unit) {
+                        launch {
+                            scrollState.animateScrollTo(view.height)
+                        }.invokeOnCompletion {
+                            val offscreenBitmap = view.drawToBitmap()
+                            val bitmap = combineBitmaps(visibleBitmap, offscreenBitmap)
+
+                            val fileUri = saveBitmap(context, bitmap)
+                            if (fileUri != null) {
+                                shareImage(context, fileUri)
+                            }
+                        }
+
+                    }
+                    //viewModel.showTaskForm()
+                }
+                is UiState.Scroll -> {
+                    val view = LocalView.current
                 }
             }
         }

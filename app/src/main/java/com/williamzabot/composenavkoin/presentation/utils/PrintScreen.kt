@@ -6,33 +6,41 @@ import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
-import android.view.View
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalView
 import androidx.core.content.FileProvider
+import androidx.core.view.drawToBitmap
 import java.io.File
 import java.io.FileOutputStream
 import kotlinx.coroutines.launch
 
 @Composable
-fun PrintScreen(view: View, context: Context) {
-    LaunchedEffect(key1 = Unit) {
+fun CaptureScreenshot(
+    context: Context,
+    moveScrollState: () -> Unit
+) {
+    val view = LocalView.current
+    LaunchedEffect(Unit) {
+        val visibleBitmap = view.drawToBitmap()
         launch {
-            captureScreen(view)?.let { img ->
-                val fileUri = saveBitmap(context, img)
-                if (fileUri != null) {
-                    shareImage(context, fileUri)
-                }
-            }
+            moveScrollState()
         }
     }
 }
 
-private fun captureScreen(view: View): Bitmap? {
-    val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    view.draw(canvas)
-    return bitmap
+ fun combineBitmaps(visibleBitmap: Bitmap, offscreenBitmap: Bitmap): Bitmap {
+    val combinedBitmap = Bitmap.createBitmap(
+        visibleBitmap.width,
+        visibleBitmap.height + offscreenBitmap.height,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(combinedBitmap)
+    canvas.drawBitmap(visibleBitmap, 0f, 0f, null)
+    canvas.drawBitmap(offscreenBitmap, 0f, visibleBitmap.height.toFloat(), null)
+    return combinedBitmap
 }
 
 fun saveBitmap(context: Context, bitmap: Bitmap): Uri? {
@@ -47,7 +55,6 @@ fun saveBitmap(context: Context, bitmap: Bitmap): Uri? {
         file
     )
 }
-
 
 fun shareImage(context: Context, fileUri: Uri) {
     val intentShareFile = Intent(Intent.ACTION_SEND).apply {

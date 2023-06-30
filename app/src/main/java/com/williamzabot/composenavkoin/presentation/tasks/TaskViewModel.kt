@@ -11,27 +11,27 @@ import kotlinx.coroutines.launch
 class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
 
     private val listWeekDays = listOf(
-        WeekDay("Segunda"),
-        WeekDay("terça"),
-        WeekDay("quarta"),
-        WeekDay("quinta"),
-        WeekDay("sexta"),
-        WeekDay("sábado"),
-        WeekDay("domingo"),
-        WeekDay("Segunda"),
-        WeekDay("terça"),
-        WeekDay("quarta"),
-        WeekDay("quinta"),
-        WeekDay("sexta"),
-        WeekDay("sábado"),
-        WeekDay("domingo"),
-        WeekDay("Segunda"),
-        WeekDay("terça"),
-        WeekDay("quarta"),
-        WeekDay("quinta"),
-        WeekDay("sexta"),
-        WeekDay("sábado"),
-        WeekDay("domingo")
+        WeekDay("1"),
+        WeekDay("2"),
+        WeekDay("3"),
+        WeekDay("4"),
+        WeekDay("5"),
+        WeekDay("6"),
+        WeekDay("7"),
+        WeekDay("8"),
+        WeekDay("9"),
+        WeekDay("10"),
+        WeekDay("11"),
+        WeekDay("12"),
+        WeekDay("13"),
+        WeekDay("14"),
+        WeekDay("15"),
+        WeekDay("16"),
+        WeekDay("17"),
+        WeekDay("18"),
+        WeekDay("19"),
+        WeekDay("20"),
+        WeekDay("21")
     )
 
     private val _weekDays = MutableStateFlow(listWeekDays)
@@ -76,10 +76,17 @@ class TaskViewModel(private val taskRepository: TaskRepository) : ViewModel() {
             })
         }
     }
+
+    fun scroll() {
+        viewModelScope.launch {
+            _uiState.emit(UiState.Scroll)
+        }
+    }
 }
 
 sealed class UiState {
     object ScreenForm : UiState()
+    object Scroll : UiState()
     data class ScreenDetail(val task: Task) : UiState()
     object PrintScreen : UiState()
 }
